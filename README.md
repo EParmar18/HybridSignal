@@ -17,7 +17,7 @@ Eshan Parmar
 * Check out my portfolio site! https://rgoulazian.com/
 
 Nick Nazari
-* Pitt CS, 2022
-* zhw78@pitt.edu
-* He smells
-* https://www.linkedin.com/in/zhengmingwang/
+* Pitt CS, 2024
+* nin@pitt.edu
+* nazari in the CSC Discord
+* https://www.linkedin.com/in/~nick/
