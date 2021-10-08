@@ -1,5 +1,6 @@
 import requests
 import config
+import pandas as pd
 
 #daily prices endpoint
 
@@ -22,4 +23,6 @@ content = requests.get(url = endpoint, params = payload)
 
 # convert the json string to a dictionary
 data = content.json()
-print(data)
+
+x = pd.read_json(str(data))
+print(x)
