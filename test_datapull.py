@@ -24,5 +24,9 @@ content = requests.get(url = endpoint, params = payload)
 # convert the json string to a dictionary
 data = content.json()
 
-x = pd.read_json(str(data))
+# print(data.get('candles'))
+
+x = pd.DataFrame(data.get('candles'))
+
 print(x)
+
