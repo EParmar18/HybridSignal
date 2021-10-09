@@ -20,3 +20,8 @@ Nick Nazari
 * nin45@pitt.edu
 * nazari in the CSC Discord
 * https://www.linkedin.com/in/~nick/
+
+## Run the project
+* You will need a TD Ameritrade API key in a file called config.py. Make sure the file is called config.py, because that is the only file that .gitignore will not upload.
+
+* Store the key in a string in the variable called client_id
