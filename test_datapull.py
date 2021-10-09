@@ -26,7 +26,9 @@ data = content.json()
 
 # print(data.get('candles'))
 
+# put price data of payload parameters in DF
 x = pd.DataFrame(data.get('candles'))
 
 print(x)
+
 
