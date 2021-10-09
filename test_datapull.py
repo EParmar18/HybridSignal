@@ -29,6 +29,8 @@ data = content.json()
 # put price data of payload parameters in DF
 x = pd.DataFrame(data.get('candles'))
 
+# for the EMA, we can use .ewm from the dataframe object
+# this line makes an 18 day moving average1
+x['4dayEMA'] = x['close'].ewm(span=18, adjust=False).mean()
+
 print(x)
-
-
