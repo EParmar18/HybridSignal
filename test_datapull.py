@@ -2,6 +2,7 @@ import requests
 import config
 import pandas as pd
 import talib as ta
+import matplotlib.pyplot as plt
 
 #daily prices endpoint
 
@@ -32,8 +33,25 @@ x = pd.DataFrame(data.get('candles'))
 
 # for the EMA, we can use .ewm from the dataframe object
 # this line makes an 18 day moving average1
-x['4dayEMA'] = x['close'].ewm(span=18, adjust=False).mean()
+x['8EMA'] = x['close'].ewm(span=8, adjust=False).mean()
+x['21EMA'] = x['close'].ewm(span=21, adjust=False).mean()
+
+x['MACD'] = x['21EMA'] - x['8EMA']
 
 x['RSI'] = ta.RSI(x['close'], timeperiod=14)
 
 print(x)
+
+fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(10,7))
+
+x['zeroindex'] = 0
+
+x['MACD'].plot(title='MACD', label='macd', color='red', ax = axes[0])
+x['zeroindex'].plot(color='black', ax = axes[0])
+
+x['8EMA'].plot(title='SIGNAL', label='8ema', color='blue', ax = axes[1])
+x['21EMA'].plot(title='SIGNAL', label='21ema', color='orange', ax = axes[1])
+#x['close'].plot(title='SIGNAL', label='price', color='purple', ax = axes[1])
+
+
+plt.show()
