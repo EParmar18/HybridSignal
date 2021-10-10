@@ -3,6 +3,7 @@ import config
 import pandas as pd
 import talib as ta
 import matplotlib.pyplot as plt
+import pandas_ta as pta
 
 #daily prices endpoint
 
@@ -38,7 +39,7 @@ x['21EMA'] = x['close'].ewm(span=21, adjust=False).mean()
 
 x['MACD'] = x['21EMA'] - x['8EMA']
 
-x['RSI'] = ta.RSI(x['close'], timeperiod=14)
+x['RSI'] = pta.rsi(x['close'], length = 14)
 
 print(x)
 

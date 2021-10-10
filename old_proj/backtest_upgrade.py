@@ -195,7 +195,7 @@ class Backtest():
 		
 if __name__ == "__main__":
 	startcash = 5000
-	strategy = 'd2d' # choose one: macd, ema
+	strategy = 'ema' # choose one: macd, ema
 	pos_size = 10
 	stoploss = False 
 	stoploss_percent = 0.02
