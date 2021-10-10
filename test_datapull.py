@@ -1,6 +1,7 @@
 import requests
 import config
 import pandas as pd
+import talib as ta
 
 #daily prices endpoint
 
@@ -32,5 +33,7 @@ x = pd.DataFrame(data.get('candles'))
 # for the EMA, we can use .ewm from the dataframe object
 # this line makes an 18 day moving average1
 x['4dayEMA'] = x['close'].ewm(span=18, adjust=False).mean()
+
+x['RSI'] = ta.RSI(x['close'], timeperiod=14)
 
 print(x)
