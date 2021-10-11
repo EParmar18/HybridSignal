@@ -8,6 +8,8 @@ This repo is the CSC Hacks team project repository that meets all of [the reposi
 * Doing this will require learning the TD Ameritrade API, designing algorithms to implement relevant indicators, and learning the metrics used to judge a financial strategy.
 * We anticipate the following challenges: Getting a full understanding of the algorithms for indicators with require a good amount of research, the actual implementation of indicators and choosing the optimal strategy, understanding metrics.
 
+![Indicator Data](/images/indicator_graph.png)
+
 ## Team Information
 Eshan Parmar
 * Pitt CS, 2022
