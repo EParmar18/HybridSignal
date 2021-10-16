@@ -9,7 +9,7 @@ import numpy as np
 #daily prices endpoint
 
 #define endpoint
-ticker = 'GOOG'
+ticker = 'AAPL'
 endpoint = r"https://api.tdameritrade.com/v1/marketdata/{}/pricehistory".format(ticker);
 
 #define payload
@@ -17,7 +17,7 @@ payload = {'apikey':config.client_id,
 	   'periodType':'day',
 	   'frequencyType':'minute',
 	   'frequency':'1',
-	   'period':'2',
+	   'period':'1',
 #	   'endDate':'1633721305000',
 #	   'startDate':'1554535854123',
 	   'needExtendedHours':'true'}
@@ -33,7 +33,7 @@ data = content.json()
 # Price and volume data
 x = pd.DataFrame(data.get('candles'))
 x['Volume'] = x.get('volume')
-
+x['Price'] = x.get('close')
 # INDICATORS
 # for the EMA, we can use .ewm from the dataframe object
 # this line makes an 18 day moving average1
@@ -83,7 +83,7 @@ for pos,m in enumerate(x['MACD']):
 
 # Printing out Plots
 
-fig, axes = plt.subplots(nrows=6, ncols=1, figsize=(10,7))
+fig, axes = plt.subplots(nrows=7, ncols=1, figsize=(20,15))
 
 x['MACD'].plot(title='MACD', label='macd', color='red', ax = axes[0])
 x['MACDsignal'].plot(label='macdsignal', color='green',ax = axes[0])
@@ -101,6 +101,25 @@ x['70rsi'].plot(label='70', color='black', linestyle='dashed', ax=axes[2])
 x['RSIsignal'].plot(title='RSIsignal', label = 'RSIsignal', color='green', ax = axes[3])
 x['MACDcross'].plot(title='MACDcross', label = 'MACDcross', color='green', ax = axes[4])
 
+x['Price'].plot(title='Price', label = 'Price', color = 'blue', ax = axes[5])
+
+rsiSet = x['RSIsignal'].copy(deep = True)
+
+num = range(len(x['Price']))
+for index ,i in enumerate(x['RSIsignal']):
+	if i  == -1:
+		# Plot a sell dot	
+		rsiSet[index] = x['Price'][index]
+		#plt.scatter(x = num[index], y = rsiSet[index], color = 'red',marker = 'o')
+		
+	elif i == 1:
+		# Plot a buy dot
+		rsiSet[index] = x['Price'][index]
+		#plt.scatter(x = num[index], y = rsiSet[index], color = 'green',marker = 'o',)
+		
+		# 0 0 0 0 0 0 144 0 0 0 0 0 0 
+		
 # Working on displaying Volume
 #x['Volume'].plot.bar(width = .2, color = 'green', ax = axes[5])
+
 plt.show()
