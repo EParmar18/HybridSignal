@@ -145,8 +145,28 @@ for index ,i in enumerate(z['RSIsignal']):
 
 indices = find_peaks(z['RSI'])[0]
 
-for i in indices:
-	print(i)
+fig = go.Figure()
+fig.add_trace(go.Scatter(
+	y = z['RSI'],
+	mode='lines+markers',
+	name='Original Plot'
+))
+
+
+fig.add_trace(go.Scatter(
+    x=indices,
+    y=[z['RSI'][j] for j in indices],
+    mode='markers',
+    marker=dict(
+        size=8,
+        color='red',
+        symbol='cross'
+    ),
+    name='Detected Peaks'
+))
+
+fig.show()
+
 
 # fig = go.Figure()
 # fig.add_trace(go.Scatter(
