@@ -46,7 +46,7 @@ fig = go.Figure(data=[go.Candlestick(x=times,
                 high=z.get('high'),
                 low=z.get('low'),
                 close=z.get('close'),
-				increasing_line_color= 'cyan', decreasing_line_color= 'gray')])
+				increasing_line_color= 'green', decreasing_line_color= 'red')])
 
 fig.show()
 
@@ -64,11 +64,11 @@ z['30rsi'] = 30
 z['70rsi'] = 70
 
 # plotting the macd
-fig = px.line(z, x=times, y=['MACD', 'MACDsignal', 'zeroindex'])
+fig = px.line(z, x=times, y=['MACD', 'MACDsignal', 'zeroindex'], color_discrete_map={'MACD':'blue','MACDsignal':'gold'})
 fig.show()
 
 # plotting 8 step and 21 step ema
-fig = px.line(z, x=times, y=['8EMA', '21EMA'])
+fig = px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
 fig.show()
 
 # plotting RSI
