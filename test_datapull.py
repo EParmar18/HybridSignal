@@ -7,6 +7,7 @@ import pandas_ta as pta
 import numpy as np
 import plotly.graph_objects as go
 from datetime import datetime
+import plotly.express as px
 
 #daily prices endpoint
 
@@ -30,9 +31,6 @@ content = requests.get(url = endpoint, params = payload)
 
 # convert the json string to a dictionary
 data = content.json()
-
-# print(data.get('candles'))
-
 
 # Price and volume data
 z = pd.DataFrame(data.get('candles'))
@@ -61,14 +59,21 @@ z['MACD'] = z['21EMA'] - z['8EMA']
 z['MACDsignal'] = z['MACD'].ewm(span=9, adjust=False).mean()
 z['RSI'] = pta.rsi(z['close'], length = 14)
 
-print(z)
-
-
-
 z['zeroindex'] = 0
 z['30rsi'] = 30
 z['70rsi'] = 70
 
+# plotting the macd
+fig = px.line(z, x=times, y=['MACD', 'MACDsignal', 'zeroindex'])
+fig.show()
+
+# plotting 8 step and 21 step ema
+fig = px.line(z, x=times, y=['8EMA', '21EMA'])
+fig.show()
+
+# plotting RSI
+fig = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'])
+fig.show()
 
 z['RSIsignal'] = 0
 z['MACDcross'] = 0
@@ -101,20 +106,8 @@ for pos,m in enumerate(z['MACD']):
 
 # Printing out Plots
 
-fig, axes = plt.subplots(nrows=7, ncols=1, figsize=(20,15))
 
-z['MACD'].plot(title='MACD', label='macd', color='red', ax = axes[0])
-z['MACDsignal'].plot(label='macdsignal', color='green',ax = axes[0])
-z['zeroindex'].plot(color='black', ax = axes[0])
-
-z['8EMA'].plot(title='EMA', label='8ema', color='blue', ax = axes[1])
-z['21EMA'].plot(title='EMA', label='21ema', color='orange', ax = axes[1])
-
-#z['close'].plot(title='RSIsignal', label='price', color='purple', ax = axes[1,2])
-
-z['RSI'].plot(title='RSI', label='RSI', color='purple', ax = axes[2])
-z['30rsi'].plot(label='30', color='black', linestyle='dashed', ax = axes[2])
-z['70rsi'].plot(label='70', color='black', linestyle='dashed', ax=axes[2])
+fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(20,15))
 
 z['RSIsignal'].plot(title='RSIsignal', label = 'RSIsignal', color='green', ax = axes[3])
 z['MACDcross'].plot(title='MACDcross', label = 'MACDcross', color='green', ax = axes[4])
