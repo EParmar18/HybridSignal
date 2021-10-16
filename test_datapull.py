@@ -48,7 +48,7 @@ fig = go.Figure(data=[go.Candlestick(x=times,
                 high=z.get('high'),
                 low=z.get('low'),
                 close=z.get('close'),
-				increasing_line_color= 'cyan', decreasing_line_color= 'gray'))])
+				increasing_line_color= 'cyan', decreasing_line_color= 'gray')])
 
 fig.show()
 
