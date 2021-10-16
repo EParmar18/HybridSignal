@@ -8,6 +8,7 @@ import numpy as np
 import plotly.graph_objects as go
 from datetime import datetime
 import plotly.express as px
+from plotly.subplots import make_subplots
 
 #daily prices endpoint
 
@@ -41,15 +42,6 @@ times = []
 for epoch in z.get('datetime'):
 	times.append(datetime.fromtimestamp(epoch/1000))
 
-fig = go.Figure(data=[go.Candlestick(x=times,
-                open=z.get('open'),
-                high=z.get('high'),
-                low=z.get('low'),
-                close=z.get('close'),
-				increasing_line_color= 'green', decreasing_line_color= 'red')])
-
-fig.show()
-
 # INDICATORS
 # for the EMA, we can use .ewm from the dataframe object
 # this line makes an 18 day moving average1
@@ -63,16 +55,34 @@ z['zeroindex'] = 0
 z['30rsi'] = 30
 z['70rsi'] = 70
 
+#  - - - - - PLOTTING - - - - -
+
+# setting up subplots
+
+fig = make_subplots(rows=4, cols=1)
+
+# plotting the candlesticks
+candlesticks = go.Figure(data=go.Candlestick(x=times,
+                open=z.get('open'),
+                high=z.get('high'),
+                low=z.get('low'),
+                close=z.get('close'),
+				increasing_line_color= 'green', decreasing_line_color= 'red'))
+fig.append_trace(candlesticks, row=1, col=1)
+
 # plotting the macd
-fig = px.line(z, x=times, y=['MACD', 'MACDsignal', 'zeroindex'], color_discrete_map={'MACD':'blue','MACDsignal':'gold'})
-fig.show()
+macd = go.Figure(px.line(z, x=times, y=['MACD', 'MACDsignal', 'zeroindex'], color_discrete_map={'MACD':'blue','MACDsignal':'gold'}))
+fig.append_trace(macd, row=2, col=1)
 
 # plotting 8 step and 21 step ema
-fig = px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
-fig.show()
+ema = go.Figure(px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'}))
+fig.append_trace(ema, row=3, col=1)
 
 # plotting RSI
-fig = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'])
+rsi = go.Figure(px.line(z, x=times, y=['RSI', '30rsi', '70rsi']))
+fig.append_trace(rsi, row=4, col=1)
+
+fig.update_layout(height=600, width=600)
 fig.show()
 
 z['RSIsignal'] = 0
@@ -105,14 +115,6 @@ for pos,m in enumerate(z['MACD']):
 		z['MACDcross'][pos] = 0
 
 # Printing out Plots
-
-
-fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(20,15))
-
-z['RSIsignal'].plot(title='RSIsignal', label = 'RSIsignal', color='green', ax = axes[3])
-z['MACDcross'].plot(title='MACDcross', label = 'MACDcross', color='green', ax = axes[4])
-
-z['Price'].plot(title='Price', label = 'Price', color = 'blue', ax = axes[5])
 
 rsiSet = z['RSIsignal'].copy(deep = True)
 
