@@ -33,13 +33,17 @@ data = content.json()
 
 # print(data.get('candles'))
 
+
 # Price and volume data
 z = pd.DataFrame(data.get('candles'))
 z['Volume'] = z.get('volume')
 z['Price'] = z.get('close')
 
+times = []
+for epoch in z.get('datetime'):
+	times.append(datetime.fromtimestamp(epoch/1000))
 
-fig = go.Figure(data=[go.Candlestick(x=z.get('datetime'),
+fig = go.Figure(data=[go.Candlestick(x=times,
                 open=z.get('open'),
                 high=z.get('high'),
                 low=z.get('low'),
