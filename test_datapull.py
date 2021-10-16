@@ -71,8 +71,10 @@ fig.show()
 fig = px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
 fig.show()
 
+# Example test 
+
 # plotting RSI
-fig = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'])
+fig = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'], color_discrete_map={'30rsi':'green','21EMA':'red'} )
 fig.show()
 
 z['RSIsignal'] = 0
