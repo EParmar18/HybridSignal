@@ -58,31 +58,44 @@ z['70rsi'] = 70
 #  - - - - - PLOTTING - - - - -
 
 # setting up subplots
-
-fig = make_subplots(rows=4, cols=1)
+fig = make_subplots(rows=5, cols=1)
 
 # plotting the candlesticks
-candlesticks = go.Figure(data=go.Candlestick(x=times,
+candlesticks = go.Candlestick(x=times,
                 open=z.get('open'),
                 high=z.get('high'),
                 low=z.get('low'),
                 close=z.get('close'),
-				increasing_line_color= 'green', decreasing_line_color= 'red'))
-fig.append_trace(candlesticks, row=1, col=1)
+				increasing_line_color= 'green', decreasing_line_color= 'red')
+fig.add_trace(candlesticks, row=1, col=1)
 
 # plotting the macd
-macd = go.Figure(px.line(z, x=times, y=['MACD', 'MACDsignal', 'zeroindex'], color_discrete_map={'MACD':'blue','MACDsignal':'gold'}))
-fig.append_trace(macd, row=2, col=1)
+macd = go.Scatter(x=times, y=z['MACD'])
+macdSIGNAL = go.Scatter(x=times, y=z['MACDsignal'])
+zeroindex = go.Scatter(x=times, y=z['zeroindex'])
+fig.add_trace(macd, row=3, col=1)
+fig.add_trace(macdSIGNAL, row=3, col=1)
+fig.add_trace(zeroindex, row=3, col=1)
+
 
 # plotting 8 step and 21 step ema
-ema = go.Figure(px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'}))
-fig.append_trace(ema, row=3, col=1)
+ema8 = go.Scatter(x=times,y=z['8EMA'])
+ema21 = go.Scatter(x=times,y=z['21EMA'])
+fig.add_trace(ema8, row=4, col=1)
+fig.add_trace(ema21, row=4, col=1)
 
 # plotting RSI
-rsi = go.Figure(px.line(z, x=times, y=['RSI', '30rsi', '70rsi']))
-fig.append_trace(rsi, row=4, col=1)
+#rsi = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'])
+# above line is the other approach, but it does not work with subplots
+RSI = go.Scatter(x=times, y=z['RSI'])
+rsi30 = go.Scatter(x=times, y=z['30rsi'])
+rsi70 = go.Scatter(x=times, y=z['70rsi'])
+fig.add_trace(RSI, row=5, col=1)
+fig.add_trace(rsi30, row=5, col=1)
+fig.add_trace(rsi70, row=5, col=1)
 
-fig.update_layout(height=600, width=600)
+# this line can be used to resize
+# fig.update_layout(height=600, width=600)
 fig.show()
 
 z['RSIsignal'] = 0
