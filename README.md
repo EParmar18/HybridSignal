@@ -27,3 +27,17 @@ Nick Nazari
 * You will need a TD Ameritrade API key in a file called config.py. Make sure the file is called config.py, because that is the only file that .gitignore will not upload.
 
 * Store the key in a string in the variable called client_id
+
+## MVP Milestone
+In order to run the application make sure you have the following libraries installed:
+*pandas*
+*numpy*
+*plotly*
+*matlibplot*
+
+The main file to run is **test_datapull.py** which will produce a series of graphs
+
+Graph 1 is the candle graph for a specified stock
+Graph 2 is the MACD of that specific stock
+Graph 3 is the 8EMA and the 21EMA over that time period
+Graph 4 is the RSI index over that time period
