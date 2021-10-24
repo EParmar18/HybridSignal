@@ -37,7 +37,13 @@ In order to run the application make sure you have the following libraries insta
 
 The main file to run is **test_datapull.py** which will produce a series of graphs
 
-Graph 1 is the candle graph for a specified stock
-Graph 2 is the MACD of that specific stock
-Graph 3 is the 8EMA and the 21EMA over that time period
-Graph 4 is the RSI index over that time period
+![Price Candle](/images/Price.png)
+Graph 1 is the candle graph for a specified stock (AAPL in this case)
+![MACD](/images/Price.png)
+Graph 2 is the MACD of that specific stock. MACD is the Moving Average Convergence Divergence and is designed to reveal changes in the strength, direction, momentum, and duration of a trend in a stock's price. By looking at the MACD we can employ a simple trading strategy of buying when the MACD crosses above 0 and sell when it crosses below
+![EMA](/images/EMA.png)
+Graph 3 is the 8EMA and the 21EMA over that time period. EMA is the exponential moving average of a stock, by looking at the 8 Day EMA and the 21 Day EMA we can see general direction of a stock since the EMA's are quick in their indication. When the 8 EMA crosses above the 21 EMA that could signal a possible buy point, and when the 21 EMA crosses below the 8 EMA that could represent a possible exit point. 
+![RSI](/images/RSI.png)
+Graph 4 is the RSI index over that time period with the lines at the 30 and 70 values. When the RSI index crosses under 30 that means that the stock is currently being oversold, when the RSI goes over 70 that means the stock is being overbought.
+![Peaks](/images/Peak.png)
+Graph 5 demonstrates finding peaks of a financial graph. Using certain peaks we could determine optimal selling points as well as other strategies. 
