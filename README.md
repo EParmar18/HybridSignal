@@ -40,7 +40,7 @@ The main file to run is **test_datapull.py** which will produce a series of grap
 ![Price Candle](/images/Price.png)
 * Graph 1 is the candle graph for a specified stock (AAPL in this case)
 
-![MACD](/images/Price.png)
+![MACD](/images/MACD.png)
 * Graph 2 is the MACD of that specific stock. MACD is the Moving Average Convergence Divergence and is designed to reveal changes in the strength, direction, momentum, and duration of a trend in a stock's price. By looking at the MACD we can employ a simple trading strategy of buying when the MACD crosses above 0 and sell when it crosses below
 
 ![EMA](/images/EMA.png)
