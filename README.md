@@ -35,7 +35,8 @@ In order to run the application make sure you have the following libraries insta
 *plotly*
 *matlibplot*
 
-The main file to run is **test_datapull.py** which will produce a series of graphs. For the examples below the stock being used is AAPL's stock graph on Oct 22nd
+* https://forms.gle/A5qr2dXPuURnLjww6 - Feedback Form!
+* The main file to run is **test_datapull.py** which will produce a series of graphs. For the examples below the stock being used is AAPL's stock graph on Oct 22nd
 
 ![Price Candle](/images/Price.png)
 * Graph 1 is the candle graph for a specified stock (AAPL in this case)
