@@ -15,7 +15,7 @@ Eshan Parmar
 * Pitt CS, 2022
 * esp27@pitt.edu
 * Eshan Parmar in the CSC Discord
-* www.linkedin.com/in/~eshan
+* www.linkedin.com/in/~eshanp
 
 Nick Nazari
 * Pitt CS, 2024
