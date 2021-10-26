@@ -80,7 +80,6 @@ fig.add_trace(macd, row=3, col=1)
 fig.add_trace(macdSIGNAL, row=3, col=1)
 fig.add_trace(zeroindex, row=3, col=1)
 
-
 # plotting 8 step and 21 step ema
 ema8 = go.Scatter(x=times,y=z['8EMA'])
 ema21 = go.Scatter(x=times,y=z['21EMA'])
@@ -101,11 +100,12 @@ fig.add_trace(RSI, row=5, col=1)
 fig.add_trace(rsi30, row=5, col=1)
 fig.add_trace(rsi70, row=5, col=1)
 
+fig.show()
+
 # this line can be used to resize
 # fig.update_layout(height=600, width=600)
 fig = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'], color_discrete_map={'30rsi':'green','21EMA':'red'} )
 fig.show()
-
 z['RSIsignal'] = 0
 z['MACDcross'] = 0
 
