@@ -9,7 +9,9 @@ import plotly.graph_objects as go
 from datetime import datetime
 import plotly.express as px
 from plotly.subplots import make_subplots
+from scipy.signal import find_peaks
 
+pd.options.mode.chained_assignment = None  # default='warn'
 #daily prices endpoint
 
 #define endpoint
@@ -47,6 +49,7 @@ for epoch in z.get('datetime'):
 # this line makes an 18 day moving average1
 z['8EMA'] = z['close'].ewm(span=8, adjust=False).mean()
 z['21EMA'] = z['close'].ewm(span=21, adjust=False).mean()
+
 z['MACD'] = z['21EMA'] - z['8EMA']
 z['MACDsignal'] = z['MACD'].ewm(span=9, adjust=False).mean()
 z['RSI'] = pta.rsi(z['close'], length = 14)
@@ -84,7 +87,11 @@ ema21 = go.Scatter(x=times,y=z['21EMA'])
 fig.add_trace(ema8, row=4, col=1)
 fig.add_trace(ema21, row=4, col=1)
 
+# Example commit for new branch
+#  
+
 # plotting RSI
+
 #rsi = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'])
 # above line is the other approach, but it does not work with subplots
 RSI = go.Scatter(x=times, y=z['RSI'])
@@ -96,6 +103,7 @@ fig.add_trace(rsi70, row=5, col=1)
 
 # this line can be used to resize
 # fig.update_layout(height=600, width=600)
+fig = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'], color_discrete_map={'30rsi':'green','21EMA':'red'} )
 fig.show()
 
 z['RSIsignal'] = 0
@@ -148,4 +156,76 @@ for index ,i in enumerate(z['RSIsignal']):
 # Working on displaying Volume
 #z['Volume'].plot.bar(width = .2, color = 'green', ax = axes[5])
 
-plt.show()
+# Finding Peaks on the Graph
+
+indices = find_peaks(z['RSI'])[0]
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(
+	y = z['RSI'],
+	mode='lines+markers',
+	name='Original Plot'
+))
+
+
+fig.add_trace(go.Scatter(
+    x=indices,
+    y=[z['RSI'][j] for j in indices],
+    mode='markers',
+    marker=dict(
+        size=8,
+        color='red',
+        symbol='cross'
+    ),
+    name='Detected Peaks'
+))
+
+fig.show()
+
+idx8 = np.argwhere(np.diff(np.sign(z['8EMA'] - z['21EMA']))).flatten()
+
+# z['8EMA'].plot()
+# z['21EMA'].plot()
+#z['21EMA'].plot(title='EMA', label='21ema', color='orange', ax = axes[1])
+#plt.scatter(z['Price'].index[idx8], z['8EMA'][idx8], color='red')
+
+# xcord = []
+
+# for index, i in enumerate(idx8):
+# 	xcord.append(z['Price'][idx8].index[index])
+# 	print(xcord)
+# 	#print(index, i)
+
+fig = go.Figure(data=go.Scatter(x = times, y = z['8EMA'], mode = 'lines'))
+fig.add_traces(go.Scatter(x = times, y = z['21EMA'], mode = 'lines'))
+fig.add_traces(go.Scatter(x = times, y = z['8EMA'][idx8], mode = 'markers'))
+#fig = px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
+fig.show()
+#plt.show()
+
+
+# fig = px.line(z, x=times, y=['8EMA', '21EMA', 'idx8'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
+# fig.show()
+
+# fig = go.Figure()
+# fig.add_trace(go.Scatter(
+#     y=z,
+#     mode='lines+markers',
+#     name='Original Plot'
+# ))
+
+# fig.add_trace(go.Scatter(
+#     x=indices,
+#     y=[z[j] for j in indices],
+#     mode='markers',
+#     marker=dict(
+#         size=8,
+#         color='red',
+#         symbol='cross'
+#     ),
+#     name='Detected Peaks'
+# ))
+
+#fig.show()
+
+#plt.show()
