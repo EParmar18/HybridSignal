@@ -8,8 +8,8 @@ import numpy as np
 import plotly.graph_objects as go
 from datetime import datetime
 import plotly.express as px
+from plotly.subplots import make_subplots
 from scipy.signal import find_peaks
-
 
 pd.options.mode.chained_assignment = None  # default='warn'
 #daily prices endpoint
@@ -44,15 +44,6 @@ times = []
 for epoch in z.get('datetime'):
 	times.append(datetime.fromtimestamp(epoch/1000))
 
-fig = go.Figure(data=[go.Candlestick(x=times,
-                open=z.get('open'),
-                high=z.get('high'),
-                low=z.get('low'),
-                close=z.get('close'),
-				increasing_line_color= 'green', decreasing_line_color= 'red')])
-
-fig.show()
-
 # INDICATORS
 # for the EMA, we can use .ewm from the dataframe object
 # this line makes an 18 day moving average1
@@ -67,18 +58,51 @@ z['zeroindex'] = 0
 z['30rsi'] = 30
 z['70rsi'] = 70
 
+#  - - - - - PLOTTING - - - - -
+
+# setting up subplots
+fig = make_subplots(rows=5, cols=1)
+
+# plotting the candlesticks
+candlesticks = go.Candlestick(x=times,
+                open=z.get('open'),
+                high=z.get('high'),
+                low=z.get('low'),
+                close=z.get('close'),
+				increasing_line_color= 'green', decreasing_line_color= 'red')
+fig.add_trace(candlesticks, row=1, col=1)
+
 # plotting the macd
-fig = px.line(z, x=times, y=['MACD', 'MACDsignal', 'zeroindex'], color_discrete_map={'MACD':'blue','MACDsignal':'gold'})
-fig.show()
+macd = go.Scatter(x=times, y=z['MACD'])
+macdSIGNAL = go.Scatter(x=times, y=z['MACDsignal'])
+zeroindex = go.Scatter(x=times, y=z['zeroindex'])
+fig.add_trace(macd, row=3, col=1)
+fig.add_trace(macdSIGNAL, row=3, col=1)
+fig.add_trace(zeroindex, row=3, col=1)
+
 
 # plotting 8 step and 21 step ema
-fig = px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
-fig.show()
+ema8 = go.Scatter(x=times,y=z['8EMA'])
+ema21 = go.Scatter(x=times,y=z['21EMA'])
+fig.add_trace(ema8, row=4, col=1)
+fig.add_trace(ema21, row=4, col=1)
 
 # Example commit for new branch
 #  
 
 # plotting RSI
+
+#rsi = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'])
+# above line is the other approach, but it does not work with subplots
+RSI = go.Scatter(x=times, y=z['RSI'])
+rsi30 = go.Scatter(x=times, y=z['30rsi'])
+rsi70 = go.Scatter(x=times, y=z['70rsi'])
+fig.add_trace(RSI, row=5, col=1)
+fig.add_trace(rsi30, row=5, col=1)
+fig.add_trace(rsi70, row=5, col=1)
+
+# this line can be used to resize
+# fig.update_layout(height=600, width=600)
 fig = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'], color_discrete_map={'30rsi':'green','21EMA':'red'} )
 fig.show()
 
@@ -112,14 +136,6 @@ for pos,m in enumerate(z['MACD']):
 		z['MACDcross'][pos] = 0
 
 # Printing out Plots
-
-
-# fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(20,15))
-
-# z['RSIsignal'].plot(title='RSIsignal', label = 'RSIsignal', color='green', ax = axes[3])
-# z['MACDcross'].plot(title='MACDcross', label = 'MACDcross', color='green', ax = axes[4])
-
-# z['Price'].plot(title='Price', label = 'Price', color = 'blue', ax = axes[5])
 
 rsiSet = z['RSIsignal'].copy(deep = True)
 
