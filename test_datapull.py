@@ -8,12 +8,22 @@ import numpy as np
 import plotly.graph_objects as go
 from datetime import datetime
 import plotly.express as px
+from plotly.subplots import make_subplots
 from scipy.signal import find_peaks
-
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+form dash.dependencies import Input, Output
 
 pd.options.mode.chained_assignment = None  # default='warn'
 #daily prices endpoint
 
+#Dash app creation
+
+app = dash.Dash(__name__)
+
+# DATA
+#-----------------------------------------------------------------------------------------------------------------
 #define endpoint
 ticker = 'AAPL'
 endpoint = r"https://api.tdameritrade.com/v1/marketdata/{}/pricehistory".format(ticker);
@@ -44,15 +54,6 @@ times = []
 for epoch in z.get('datetime'):
 	times.append(datetime.fromtimestamp(epoch/1000))
 
-fig = go.Figure(data=[go.Candlestick(x=times,
-                open=z.get('open'),
-                high=z.get('high'),
-                low=z.get('low'),
-                close=z.get('close'),
-				increasing_line_color= 'green', decreasing_line_color= 'red')])
-
-fig.show()
-
 # INDICATORS
 # for the EMA, we can use .ewm from the dataframe object
 # this line makes an 18 day moving average1
@@ -67,21 +68,82 @@ z['zeroindex'] = 0
 z['30rsi'] = 30
 z['70rsi'] = 70
 
+# APP Layou
+#-----------------------------------------------------------------------------------------------------------------
+
+app.layout = html.Div([
+
+	html.H1("Hybrid Signal: Finacial Indicator Project", style={'text-align': 'center'}),
+
+	dcc.Dropdown(id="slct_stock",
+				options=[
+					{"label": "Apple", "value": AAPL},
+					{"label": "Google", "value": GOOG},
+					{"label": "Tesla", "value": TSLA},
+					{"label": "Microsoft", "value": MSFT}],
+				multi=False,
+				value=AAPL,
+				style={'width': "40%"}
+				),
+
+	html.Div(id='output_container', children = []),
+	html.Br(),
+
+	dcc.Graph(id='stock_graph', figure={})
+
+]) 
+
+#-----------------------------------------------------------------------------------------------------------------
+#  - - - - - PLOTTING - - - - -
+#-----------------------------------------------------------------------------------------------------------------
+# setting up subplots
+fig = make_subplots(rows=5, cols=1)
+
+# plotting the candlesticks
+candlesticks = go.Candlestick(x=times,
+                open=z.get('open'),
+                high=z.get('high'),
+                low=z.get('low'),
+                close=z.get('close'),
+				increasing_line_color= 'green', decreasing_line_color= 'red')
+fig.add_trace(candlesticks, row=1, col=1)
+
 # plotting the macd
-fig = px.line(z, x=times, y=['MACD', 'MACDsignal', 'zeroindex'], color_discrete_map={'MACD':'blue','MACDsignal':'gold'})
-fig.show()
+macd = go.Scatter(x=times, y=z['MACD'])
+macdSIGNAL = go.Scatter(x=times, y=z['MACDsignal'])
+zeroindex = go.Scatter(x=times, y=z['zeroindex'])
+fig.add_trace(macd, row=3, col=1)
+fig.add_trace(macdSIGNAL, row=3, col=1)
+fig.add_trace(zeroindex, row=3, col=1)
 
 # plotting 8 step and 21 step ema
-fig = px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
-fig.show()
+ema8 = go.Scatter(x=times,y=z['8EMA'])
+ema21 = go.Scatter(x=times,y=z['21EMA'])
+fig.add_trace(ema8, row=4, col=1)
+fig.add_trace(ema21, row=4, col=1)
 
 # Example commit for new branch
 #  
 
 # plotting RSI
+
+#rsi = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'])
+# above line is the other approach, but it does not work with subplots
+RSI = go.Scatter(x=times, y=z['RSI'])
+rsi30 = go.Scatter(x=times, y=z['30rsi'])
+rsi70 = go.Scatter(x=times, y=z['70rsi'])
+fig.add_trace(RSI, row=5, col=1)
+fig.add_trace(rsi30, row=5, col=1)
+fig.add_trace(rsi70, row=5, col=1)
+
+fig.show()
+
+# this line can be used to resize
+# fig.update_layout(height=600, width=600)
 fig = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'], color_discrete_map={'30rsi':'green','21EMA':'red'} )
 fig.show()
 
+#-----------------------------------------------------------------------------------------------------------------
 z['RSIsignal'] = 0
 z['MACDcross'] = 0
 
@@ -112,14 +174,6 @@ for pos,m in enumerate(z['MACD']):
 		z['MACDcross'][pos] = 0
 
 # Printing out Plots
-
-
-# fig, axes = plt.subplots(nrows=4, ncols=1, figsize=(20,15))
-
-# z['RSIsignal'].plot(title='RSIsignal', label = 'RSIsignal', color='green', ax = axes[3])
-# z['MACDcross'].plot(title='MACDcross', label = 'MACDcross', color='green', ax = axes[4])
-
-# z['Price'].plot(title='Price', label = 'Price', color = 'blue', ax = axes[5])
 
 rsiSet = z['RSIsignal'].copy(deep = True)
 
@@ -168,6 +222,23 @@ fig.show()
 
 idx8 = np.argwhere(np.diff(np.sign(z['8EMA'] - z['21EMA']))).flatten()
 
+
+# improved crossover, can be modified a bit but the general idea is below
+z['emaCross'] = None
+pos = 0
+leading8 = True if z['8EMA'][0] > z['21EMA'][0] else False
+for price in z['8EMA']: 
+	if pos != 0 or pos != len(z['8EMA']):
+		if leading8:
+			if z['21EMA'][pos] > z['8EMA'][pos]:
+				leading8 = False
+				z['emaCross'][pos] = z['8EMA'][pos]
+		elif not leading8:
+			if z['21EMA'][pos] < z['8EMA'][pos]:
+				leading8 = True
+				z['emaCross'][pos] = z['21EMA'][pos]
+	pos += 1
+
 # z['8EMA'].plot()
 # z['21EMA'].plot()
 #z['21EMA'].plot(title='EMA', label='21ema', color='orange', ax = axes[1])
@@ -182,7 +253,8 @@ idx8 = np.argwhere(np.diff(np.sign(z['8EMA'] - z['21EMA']))).flatten()
 
 fig = go.Figure(data=go.Scatter(x = times, y = z['8EMA'], mode = 'lines'))
 fig.add_traces(go.Scatter(x = times, y = z['21EMA'], mode = 'lines'))
-fig.add_traces(go.Scatter(x = times, y = z['8EMA'][idx8], mode = 'markers'))
+# fig.add_traces(go.Scatter(x = times, y = z['8EMA'][idx8], mode = 'markers'))
+fig.add_traces(go.Scatter(x = times, y= z['emaCross'], mode = 'markers'))
 #fig = px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
 fig.show()
 #plt.show()
