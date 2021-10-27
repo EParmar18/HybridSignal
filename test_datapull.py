@@ -11,16 +11,14 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 from scipy.signal import find_peaks
 import dash
-from dash import dcc
-from dash import html
-from dash.dependencies import Input, Output
+from dash import Dash, dcc, html, Input, Output
 
 pd.options.mode.chained_assignment = None  # default='warn'
 #daily prices endpoint
 
 #Dash app creation
 
-app = dash.Dash(__name__)
+app = Dash(__name__)
 
 # DATA
 #-----------------------------------------------------------------------------------------------------------------
@@ -102,15 +100,17 @@ def update_graph(option_slctd):
 	print(option_slctd)
 	print(type(option_slctd))
 
-	contiant = "The stock chosen by the user was: {}".format(option_slctd)
+	container = "The stock chosen by the user was: {}".format(option_slctd)
 
 	dff = data.copy()
-	fig = go.Figure(data=go.Scatter(x = times, y = z['8EMA'], mode = 'lines'))
-	fig.add_traces(go.Scatter(x = times, y = z['21EMA'], mode = 'lines'))
-	# fig.add_traces(go.Scatter(x = times, y = z['8EMA'][idx8], mode = 'markers'))
-	fig.add_traces(go.Scatter(x = times, y= z['emaCross'], mode = 'markers'))
+	fig = go.Candlestick(x=times,
+                open=z.get('open'),
+                high=z.get('high'),
+                low=z.get('low'),
+                close=z.get('close'),
+				increasing_line_color= 'green', decreasing_line_color= 'red')
 
-	fig.update_layour(
+	fig.update_layout(
 		title_text = "Dash Test",
 		title_xanchor = "center",
 		title_font=dict(size=24),
