@@ -13,6 +13,7 @@ from scipy.signal import find_peaks
 import dash
 from dash import Dash, dcc, html, Input, Output
 
+
 pd.options.mode.chained_assignment = None  # default='warn'
 #daily prices endpoint
 
@@ -125,6 +126,9 @@ def update_graph(option_slctd):
 
 #  - - - - - PLOTTING - - - - -
 #-----------------------------------------------------------------------------------------------------------------
+
+#  - - - - - PLOTTING - - - - -
+
 # setting up subplots
 fig = make_subplots(rows=5, cols=1)
 
@@ -164,6 +168,7 @@ fig.add_trace(RSI, row=5, col=1)
 fig.add_trace(rsi30, row=5, col=1)
 fig.add_trace(rsi70, row=5, col=1)
 
+
 fig.show()
 
 # this line can be used to resize
@@ -172,6 +177,7 @@ fig = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'], color_discrete_map={'30rs
 fig.show()
 
 #-----------------------------------------------------------------------------------------------------------------
+
 z['RSIsignal'] = 0
 z['MACDcross'] = 0
 
@@ -249,6 +255,28 @@ fig.add_trace(go.Scatter(
 fig.show()
 
 idx8 = np.argwhere(np.diff(np.sign(z['8EMA'] - z['21EMA']))).flatten()
+
+
+# improved crossover, can be modified a bit but the general idea is below
+z['emaCross'] = None
+pos = 0
+leading8 = True if z['8EMA'][0] > z['21EMA'][0] else False
+for price in z['8EMA']: 
+	if pos != 0 or pos != len(z['8EMA']):
+		if leading8:
+			if z['21EMA'][pos] > z['8EMA'][pos]:
+				leading8 = False
+				z['emaCross'][pos] = z['8EMA'][pos]
+		elif not leading8:
+			if z['21EMA'][pos] < z['8EMA'][pos]:
+				leading8 = True
+				z['emaCross'][pos] = z['21EMA'][pos]
+	pos += 1
+
+# z['8EMA'].plot()
+# z['21EMA'].plot()
+#z['21EMA'].plot(title='EMA', label='21ema', color='orange', ax = axes[1])
+#plt.scatter(z['Price'].index[idx8], z['8EMA'][idx8], color='red')
 
 
 # improved crossover, can be modified a bit but the general idea is below
