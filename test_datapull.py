@@ -11,9 +11,9 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 from scipy.signal import find_peaks
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
-form dash.dependencies import Input, Output
+from dash import dcc
+from dash import html
+from dash.dependencies import Input, Output
 
 pd.options.mode.chained_assignment = None  # default='warn'
 #daily prices endpoint
@@ -68,7 +68,7 @@ z['zeroindex'] = 0
 z['30rsi'] = 30
 z['70rsi'] = 70
 
-# APP Layou
+# APP Layout
 #-----------------------------------------------------------------------------------------------------------------
 
 app.layout = html.Div([
@@ -77,12 +77,12 @@ app.layout = html.Div([
 
 	dcc.Dropdown(id="slct_stock",
 				options=[
-					{"label": "Apple", "value": AAPL},
-					{"label": "Google", "value": GOOG},
-					{"label": "Tesla", "value": TSLA},
-					{"label": "Microsoft", "value": MSFT}],
+					{"label": "Apple", "value": 1},
+					{"label": "Google", "value": 2},
+					{"label": "Tesla", "value": 3},
+					{"label": "Microsoft", "value": 4}],
 				multi=False,
-				value=AAPL,
+				value=1,
 				style={'width': "40%"}
 				),
 
@@ -93,7 +93,36 @@ app.layout = html.Div([
 
 ]) 
 
+@app.callback(
+	[Output(component_id='output_container', component_property='children'),
+	Output(component_id='stock_graph', component_property='figure')],
+	[Input(component_id='slct_stock', component_property='value')]
+)
+def update_graph(option_slctd):
+	print(option_slctd)
+	print(type(option_slctd))
+
+	contiant = "The stock chosen by the user was: {}".format(option_slctd)
+
+	dff = data.copy()
+	fig = go.Figure(data=go.Scatter(x = times, y = z['8EMA'], mode = 'lines'))
+	fig.add_traces(go.Scatter(x = times, y = z['21EMA'], mode = 'lines'))
+	# fig.add_traces(go.Scatter(x = times, y = z['8EMA'][idx8], mode = 'markers'))
+	fig.add_traces(go.Scatter(x = times, y= z['emaCross'], mode = 'markers'))
+
+	fig.update_layour(
+		title_text = "Dash Test",
+		title_xanchor = "center",
+		title_font=dict(size=24),
+		title_x=0.5,
+		geo=dict(scope='use'),
+	)
+
+	return container, fig
+
 #-----------------------------------------------------------------------------------------------------------------
+
+
 #  - - - - - PLOTTING - - - - -
 #-----------------------------------------------------------------------------------------------------------------
 # setting up subplots
@@ -127,7 +156,6 @@ fig.add_trace(ema21, row=4, col=1)
 
 # plotting RSI
 
-#rsi = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'])
 # above line is the other approach, but it does not work with subplots
 RSI = go.Scatter(x=times, y=z['RSI'])
 rsi30 = go.Scatter(x=times, y=z['30rsi'])
@@ -239,49 +267,10 @@ for price in z['8EMA']:
 				z['emaCross'][pos] = z['21EMA'][pos]
 	pos += 1
 
-# z['8EMA'].plot()
-# z['21EMA'].plot()
-#z['21EMA'].plot(title='EMA', label='21ema', color='orange', ax = axes[1])
-#plt.scatter(z['Price'].index[idx8], z['8EMA'][idx8], color='red')
-
-# xcord = []
-
-# for index, i in enumerate(idx8):
-# 	xcord.append(z['Price'][idx8].index[index])
-# 	print(xcord)
-# 	#print(index, i)
 
 fig = go.Figure(data=go.Scatter(x = times, y = z['8EMA'], mode = 'lines'))
 fig.add_traces(go.Scatter(x = times, y = z['21EMA'], mode = 'lines'))
-# fig.add_traces(go.Scatter(x = times, y = z['8EMA'][idx8], mode = 'markers'))
 fig.add_traces(go.Scatter(x = times, y= z['emaCross'], mode = 'markers'))
-#fig = px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
-fig.show()
-#plt.show()
 
-
-# fig = px.line(z, x=times, y=['8EMA', '21EMA', 'idx8'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
-# fig.show()
-
-# fig = go.Figure()
-# fig.add_trace(go.Scatter(
-#     y=z,
-#     mode='lines+markers',
-#     name='Original Plot'
-# ))
-
-# fig.add_trace(go.Scatter(
-#     x=indices,
-#     y=[z[j] for j in indices],
-#     mode='markers',
-#     marker=dict(
-#         size=8,
-#         color='red',
-#         symbol='cross'
-#     ),
-#     name='Detected Peaks'
-# ))
-
-#fig.show()
-
-#plt.show()
+if __name__ == '__main__':
+	app.run_server(debug=True)
