@@ -10,10 +10,19 @@ from datetime import datetime
 import plotly.express as px
 from plotly.subplots import make_subplots
 from scipy.signal import find_peaks
+import dash
+from dash import Dash, dcc, html, Input, Output
+
 
 pd.options.mode.chained_assignment = None  # default='warn'
 #daily prices endpoint
 
+#Dash app creation
+
+app = Dash(__name__)
+
+# DATA
+#-----------------------------------------------------------------------------------------------------------------
 #define endpoint
 ticker = 'AAPL'
 endpoint = r"https://api.tdameritrade.com/v1/marketdata/{}/pricehistory".format(ticker);
@@ -58,6 +67,66 @@ z['zeroindex'] = 0
 z['30rsi'] = 30
 z['70rsi'] = 70
 
+# APP Layout
+#-----------------------------------------------------------------------------------------------------------------
+
+app.layout = html.Div([
+
+	html.H1("Hybrid Signal: Finacial Indicator Project", style={'text-align': 'center'}),
+
+	dcc.Dropdown(id="slct_stock",
+				options=[
+					{"label": "Apple", "value": 1},
+					{"label": "Google", "value": 2},
+					{"label": "Tesla", "value": 3},
+					{"label": "Microsoft", "value": 4}],
+				multi=False,
+				value=1,
+				style={'width': "40%"}
+				),
+
+	html.Div(id='output_container', children = []),
+	html.Br(),
+
+	dcc.Graph(id='stock_graph', figure={})
+
+]) 
+
+@app.callback(
+	[Output(component_id='output_container', component_property='children'),
+	Output(component_id='stock_graph', component_property='figure')],
+	[Input(component_id='slct_stock', component_property='value')]
+)
+def update_graph(option_slctd):
+	print(option_slctd)
+	print(type(option_slctd))
+
+	container = "The stock chosen by the user was: {}".format(option_slctd)
+
+	dff = data.copy()
+	fig = go.Candlestick(x=times,
+                open=z.get('open'),
+                high=z.get('high'),
+                low=z.get('low'),
+                close=z.get('close'),
+				increasing_line_color= 'green', decreasing_line_color= 'red')
+
+	fig.update_layout(
+		title_text = "Dash Test",
+		title_xanchor = "center",
+		title_font=dict(size=24),
+		title_x=0.5,
+		geo=dict(scope='use'),
+	)
+
+	return container, fig
+
+#-----------------------------------------------------------------------------------------------------------------
+
+
+#  - - - - - PLOTTING - - - - -
+#-----------------------------------------------------------------------------------------------------------------
+
 #  - - - - - PLOTTING - - - - -
 
 # setting up subplots
@@ -91,7 +160,6 @@ fig.add_trace(ema21, row=4, col=1)
 
 # plotting RSI
 
-#rsi = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'])
 # above line is the other approach, but it does not work with subplots
 RSI = go.Scatter(x=times, y=z['RSI'])
 rsi30 = go.Scatter(x=times, y=z['30rsi'])
@@ -100,12 +168,16 @@ fig.add_trace(RSI, row=5, col=1)
 fig.add_trace(rsi30, row=5, col=1)
 fig.add_trace(rsi70, row=5, col=1)
 
+
 fig.show()
 
 # this line can be used to resize
 # fig.update_layout(height=600, width=600)
 fig = px.line(z, x=times, y=['RSI', '30rsi', '70rsi'], color_discrete_map={'30rsi':'green','21EMA':'red'} )
 fig.show()
+
+#-----------------------------------------------------------------------------------------------------------------
+
 z['RSIsignal'] = 0
 z['MACDcross'] = 0
 
@@ -206,44 +278,27 @@ for price in z['8EMA']:
 #z['21EMA'].plot(title='EMA', label='21ema', color='orange', ax = axes[1])
 #plt.scatter(z['Price'].index[idx8], z['8EMA'][idx8], color='red')
 
-# xcord = []
 
-# for index, i in enumerate(idx8):
-# 	xcord.append(z['Price'][idx8].index[index])
-# 	print(xcord)
-# 	#print(index, i)
+# improved crossover, can be modified a bit but the general idea is below
+z['emaCross'] = None
+pos = 0
+leading8 = True if z['8EMA'][0] > z['21EMA'][0] else False
+for price in z['8EMA']: 
+	if pos != 0 or pos != len(z['8EMA']):
+		if leading8:
+			if z['21EMA'][pos] > z['8EMA'][pos]:
+				leading8 = False
+				z['emaCross'][pos] = z['8EMA'][pos]
+		elif not leading8:
+			if z['21EMA'][pos] < z['8EMA'][pos]:
+				leading8 = True
+				z['emaCross'][pos] = z['21EMA'][pos]
+	pos += 1
+
 
 fig = go.Figure(data=go.Scatter(x = times, y = z['8EMA'], mode = 'lines'))
 fig.add_traces(go.Scatter(x = times, y = z['21EMA'], mode = 'lines'))
-# fig.add_traces(go.Scatter(x = times, y = z['8EMA'][idx8], mode = 'markers'))
 fig.add_traces(go.Scatter(x = times, y= z['emaCross'], mode = 'markers'))
-#fig = px.line(z, x=times, y=['8EMA', '21EMA'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
-fig.show()
-#plt.show()
 
-
-# fig = px.line(z, x=times, y=['8EMA', '21EMA', 'idx8'], color_discrete_map={'8EMA':'blue','21EMA':'gold'} )
-# fig.show()
-
-# fig = go.Figure()
-# fig.add_trace(go.Scatter(
-#     y=z,
-#     mode='lines+markers',
-#     name='Original Plot'
-# ))
-
-# fig.add_trace(go.Scatter(
-#     x=indices,
-#     y=[z[j] for j in indices],
-#     mode='markers',
-#     marker=dict(
-#         size=8,
-#         color='red',
-#         symbol='cross'
-#     ),
-#     name='Detected Peaks'
-# ))
-
-#fig.show()
-
-#plt.show()
+if __name__ == '__main__':
+	app.run_server(debug=True)
