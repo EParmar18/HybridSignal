@@ -1,5 +1,4 @@
 ![Icon](/images/hybridsignal.png)
-# HybridSignal
 
 This repo is the CSC Hacks team project repository that meets all of [the repository requirements](https://www.notion.so/CSC-Hacks-901a62e005c8494fa342e0cc738101ad#da206965e3ed497f9bd6c1ceebd4fac9).
 
