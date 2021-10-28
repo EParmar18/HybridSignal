@@ -54,5 +54,5 @@ In order to run the application make sure you have the following libraries insta
 ![Peaks](/images/Peak.png)
 * Graph 5 demonstrates finding peaks of a financial graph. Using certain peaks we could determine optimal selling points as well as other strategies. 
 
-![Crossover](/images/ema_crossove.png)
+![Crossover](/images/ema_crossover.png)
 * Graph 6 illustrates points plotted at each crossover. These points can act as guides for when to enter or exit a position.
