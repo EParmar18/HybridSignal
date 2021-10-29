@@ -273,6 +273,9 @@ for price in z['8EMA']:
 				z['emaCross'][pos] = z['21EMA'][pos]
 	pos += 1
 
+idx8 = np.argwhere(np.diff(np.sign(z['8EMA'] - z['21EMA']))).flatten()
+# for price in idx8:
+# 	print(z['Price'][price])
 # z['8EMA'].plot()
 # z['21EMA'].plot()
 #z['21EMA'].plot(title='EMA', label='21ema', color='orange', ax = axes[1])
@@ -296,9 +299,31 @@ for price in z['8EMA']:
 	pos += 1
 
 
+
 fig = go.Figure(data=go.Scatter(x = times, y = z['8EMA'], mode = 'lines'))
 fig.add_traces(go.Scatter(x = times, y = z['21EMA'], mode = 'lines'))
 fig.add_traces(go.Scatter(x = times, y= z['emaCross'], mode = 'markers'))
 
-if __name__ == '__main__':
-	app.run_server(debug=True)
+fig.show()
+
+#	-	-	-	-	- BACKTESTING 	-	-	-	-	-	
+#---------------------------------------------------------------------------------------------------------------------------------------------
+def __init__(self, startcash, strategy, pos_size, stoploss, stoploss_percent, takeprofit, takeprofit_percent, commissions, commission_amount, ticker, index_ticker, investment_period, interval):
+		self.startcash = startcash
+		self.strategy = strategy
+		self.pos_size = pos_size
+		self.stoploss = stoploss
+		self.stoploss_percent = stoploss_percent
+		self.takeprofit = takeprofit
+		self.takeprofit_percent = takeprofit_percent
+		self.commissions = commissions
+		self.commission_amount = commission_amount
+		self.ticker = ticker
+		self.index_ticker = index_ticker
+		self.investment_period = investment_period
+		self.interval = interval
+
+		self.stock = Stock(ticker, investment_period, interval)
+#
+# if __name__ == '__main__':
+# 	app.run_server(debug=False)
