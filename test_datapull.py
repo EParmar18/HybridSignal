@@ -293,11 +293,13 @@ for price in z['8EMA']:
 		if leading8:
 			if z['21EMA'][pos] > z['8EMA'][pos]:
 				leading8 = False
-				z['emaCross'][pos-1] = z['8EMA'][pos-1]
+				z['emaCross'][pos] = z['8EMA'][pos]
+				z['MACDcross'][pos] = 0
 		elif not leading8:
 			if z['21EMA'][pos] < z['8EMA'][pos]:
 				leading8 = True
-				z['emaCross'][pos-1] = z['21EMA'][pos-1]
+				z['emaCross'][pos] = z['21EMA'][pos]
+				z['MACDcross'][pos] = 0
 	pos += 1
 
 # for index, i in enumerate(z['emaCross']):
