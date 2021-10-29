@@ -336,9 +336,3 @@ def __init__(self, startcash, strategy, pos_size, stoploss, stoploss_percent, ta
 
 		self.stock = Stock(ticker, investment_period, interval)
 
-<<<<<<< HEAD
-#
-# if __name__ == '__main__':
-# 	app.run_server(debug=False)
-=======
->>>>>>> 08fef4d43bd087e4518686f74a9a6e94dedfcd07
