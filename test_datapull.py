@@ -149,6 +149,7 @@ fig.add_trace(macd, row=3, col=1)
 fig.add_trace(macdSIGNAL, row=3, col=1)
 fig.add_trace(zeroindex, row=3, col=1)
 
+
 # plotting 8 step and 21 step ema
 ema8 = go.Scatter(x=times,y=z['8EMA'])
 ema21 = go.Scatter(x=times,y=z['21EMA'])
@@ -284,6 +285,7 @@ idx8 = np.argwhere(np.diff(np.sign(z['8EMA'] - z['21EMA']))).flatten()
 
 # improved crossover, can be modified a bit but the general idea is below
 z['emaCross'] = None
+z['MACDcross'] = None
 pos = 0
 leading8 = True if z['8EMA'][0] > z['21EMA'][0] else False
 for price in z['8EMA']: 
@@ -292,18 +294,26 @@ for price in z['8EMA']:
 			if z['21EMA'][pos] > z['8EMA'][pos]:
 				leading8 = False
 				z['emaCross'][pos] = z['8EMA'][pos]
+				z['MACDcross'][pos] = 0
 		elif not leading8:
 			if z['21EMA'][pos] < z['8EMA'][pos]:
 				leading8 = True
 				z['emaCross'][pos] = z['21EMA'][pos]
+				z['MACDcross'][pos] = 0
 	pos += 1
 
-
+# for index, i in enumerate(z['emaCross']):
+# 	if i != 0:
+# 		print("RSI: ", z['RSI'][index])
+# 		print("MACD: ", z['MACD'][index])
 
 fig = go.Figure(data=go.Scatter(x = times, y = z['8EMA'], mode = 'lines'))
 fig.add_traces(go.Scatter(x = times, y = z['21EMA'], mode = 'lines'))
 fig.add_traces(go.Scatter(x = times, y= z['emaCross'], mode = 'markers'))
+fig.show()
 
+fig = go.Figure(data=go.Scatter(x = times, y = z['MACD'], mode = 'lines'))
+fig.add_traces(go.Scatter(x = times, y = z['MACDcross'], mode = 'markers'))
 fig.show()
 
 #	-	-	-	-	- BACKTESTING 	-	-	-	-	-	
@@ -324,6 +334,7 @@ def __init__(self, startcash, strategy, pos_size, stoploss, stoploss_percent, ta
 		self.interval = interval
 
 		self.stock = Stock(ticker, investment_period, interval)
+
 #
 # if __name__ == '__main__':
 # 	app.run_server(debug=False)
