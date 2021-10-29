@@ -291,11 +291,11 @@ for price in z['8EMA']:
 		if leading8:
 			if z['21EMA'][pos] > z['8EMA'][pos]:
 				leading8 = False
-				z['emaCross'][pos] = z['8EMA'][pos]
+				z['emaCross'][pos-1] = z['8EMA'][pos-1]
 		elif not leading8:
 			if z['21EMA'][pos] < z['8EMA'][pos]:
 				leading8 = True
-				z['emaCross'][pos] = z['21EMA'][pos]
+				z['emaCross'][pos-1] = z['21EMA'][pos-1]
 	pos += 1
 
 
@@ -305,6 +305,7 @@ fig.add_traces(go.Scatter(x = times, y = z['21EMA'], mode = 'lines'))
 fig.add_traces(go.Scatter(x = times, y= z['emaCross'], mode = 'markers'))
 
 fig.show()
+
 
 #	-	-	-	-	- BACKTESTING 	-	-	-	-	-	
 #---------------------------------------------------------------------------------------------------------------------------------------------
@@ -324,6 +325,4 @@ def __init__(self, startcash, strategy, pos_size, stoploss, stoploss_percent, ta
 		self.interval = interval
 
 		self.stock = Stock(ticker, investment_period, interval)
-#
-# if __name__ == '__main__':
-# 	app.run_server(debug=False)
+
