@@ -293,13 +293,11 @@ for price in z['8EMA']:
 		if leading8:
 			if z['21EMA'][pos] > z['8EMA'][pos]:
 				leading8 = False
-				z['emaCross'][pos] = z['8EMA'][pos]
-				z['MACDcross'][pos] = 0
+				z['emaCross'][pos-1] = z['8EMA'][pos-1]
 		elif not leading8:
 			if z['21EMA'][pos] < z['8EMA'][pos]:
 				leading8 = True
-				z['emaCross'][pos] = z['21EMA'][pos]
-				z['MACDcross'][pos] = 0
+				z['emaCross'][pos-1] = z['21EMA'][pos-1]
 	pos += 1
 
 # for index, i in enumerate(z['emaCross']):
@@ -315,6 +313,7 @@ fig.show()
 fig = go.Figure(data=go.Scatter(x = times, y = z['MACD'], mode = 'lines'))
 fig.add_traces(go.Scatter(x = times, y = z['MACDcross'], mode = 'markers'))
 fig.show()
+
 
 #	-	-	-	-	- BACKTESTING 	-	-	-	-	-	
 #---------------------------------------------------------------------------------------------------------------------------------------------
@@ -335,6 +334,9 @@ def __init__(self, startcash, strategy, pos_size, stoploss, stoploss_percent, ta
 
 		self.stock = Stock(ticker, investment_period, interval)
 
+<<<<<<< HEAD
 #
 # if __name__ == '__main__':
 # 	app.run_server(debug=False)
+=======
+>>>>>>> 08fef4d43bd087e4518686f74a9a6e94dedfcd07
