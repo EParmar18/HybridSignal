@@ -1,6 +1,7 @@
 ![Icon](/images/hybridsignal.png)
 
 This repo is the CSC Hacks team project repository that meets all of [the repository requirements](https://www.notion.so/CSC-Hacks-901a62e005c8494fa342e0cc738101ad#da206965e3ed497f9bd6c1ceebd4fac9).
+Small Demo Videa https://youtu.be/Bl6uet41Fy4
 
 ## Project Description
 * We want to use market data alongside specific indicators (Ex. EMA's, MACD, RSI, VOLUME, etc) to discover buy/sell opportunites for a security using Python, Yahoo Finance API, TD Ameritrade API, NumPy, and Pandas.
